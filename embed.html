@@ -65,7 +65,7 @@
     <script>
         // Get config from config.js (already loaded in head)
         const DEFAULT_WISP = window.SITE_CONFIG?.defaultWisp || "wss://wisp.mercurywork.shop";
-        const WISP_SERVERS = window.SITE_CONFIG?.wispServers || [];
+        const WISP_SERVERS = window.SITE_CONFIG?.wispServers || [{ name: "MercuryWork", url: "wss://wisp.mercurywork.shop" }];
 
         const ERRORS={noUrl:{title:"No URL Provided",message:"You need to provide a URL to load.",hint:`Format: ${location.pathname}#https://example.com`},invalidUrl:{title:"Invalid URL",message:"The URL you provided is not valid.",hint:`Try: ${location.pathname}#https://google.com`},connectionFailed:{title:"Connection Failed",message:"Could not connect to the website.",hint:"The site may be down or blocking requests."},proxyError:{title:"Proxy Error",message:"Failed to initialize the proxy connection.",hint:"Try refreshing or check your proxy settings."},timeout:{title:"Loading Timeout",message:"The page is taking too long to load.",hint:"Click 'Skip' to view what has loaded, or 'Retry' to try again."},blocked:{title:"Access Denied",message:"This website is blocking access.",hint:"Some sites don't allow being loaded through proxies."},unknown:{title:"Error",message:"An unexpected error occurred.",hint:"Please try again."}};
         const els={loading:document.getElementById('loading'),loadingTitle:document.getElementById('loading-title'),loadingUrl:document.getElementById('loading-url'),error:document.getElementById('error'),errorMessage:document.getElementById('error-message'),iframeContainer:document.getElementById('iframe-container'),skipBtn:document.getElementById('skip-btn'),retryBtn:document.getElementById('retry-btn')};

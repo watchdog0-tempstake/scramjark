@@ -6,13 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Browser</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/gh/Destroyed12121/Staticsj@main/JS/scramjet.all.js" defer></script>
+    <link rel="stylesheet" href="style.css">
     <script type="module">
         import * as BareMux from "https://cdn.jsdelivr.net/npm/@mercuryworkshop/bare-mux/dist/index.mjs";
-        window.BareMux = BareMux;
+
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement("script");
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = () => reject(new Error("Failed to load " + src));
+                document.head.appendChild(script);
+            });
+        }
+
+        try {
+            // Ensure Scramjet's global loader exists before script.js starts.
+            await loadScript("https://cdn.jsdelivr.net/gh/Destroyed12121/Staticsj@main/JS/scramjet.all.js");
+            window.BareMux = BareMux;
+            await loadScript("./script.js");
+        } catch (error) {
+            console.error("Scramjark startup failed:", error);
+            const app = document.getElementById("app");
+            if (app) app.innerHTML =
+                '<div style="padding:24px;color:#fff;font:16px system-ui">' +
+                '<h2>Scramjark could not start</h2><p>' +
+                String(error.message || error) + '</p></div>';
+        }
     </script>
-    <link rel="stylesheet" href="style.css">
-    <script src="./script.js" defer></script>
     <style>
 
     </style>

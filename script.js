@@ -5,8 +5,8 @@ const DEFAULT_WISP = window.SITE_CONFIG?.defaultWisp ?? "wss://wisp.mercurywork.
 const WISP_SERVERS = [{ name: "MercuryWork", url: DEFAULT_WISP }];
 
 // Initialize default proxy server if not set
-const savedWisp = localStorage.getItem("proxServer");
-if (!savedWisp || savedWisp === "wss://glseries.net/wisp/") {
+const savedProxy = localStorage.getItem("proxServer");
+if (!savedProxy || savedProxy === "wss://glseries.net/wisp/") {
     localStorage.setItem("proxServer", DEFAULT_WISP);
 }
 
@@ -105,7 +105,10 @@ async function initializeWithBestServer() {
 // =====================================================
 // BROWSER STATE
 // =====================================================
-const BareMux = window.BareMux ?? { BareMuxConnection: class { setTransport() {} } };
+if (!window.BareMux || typeof window.BareMux.BareMuxConnection !== "function") {
+    throw new Error("BareMux failed to load. Proxy startup was stopped instead of using a fake connection.");
+}
+const BareMux = window.BareMux;
 
 // SINGLETON: Shared resources for all tabs (prevents connection exhaustion)
 let sharedScramjet = null;
@@ -247,7 +250,7 @@ async function initializeBrowser() {
     elements.backBtn.onclick = () => getActiveTab()?.frame.back();
     elements.fwdBtn.onclick = () => getActiveTab()?.frame.forward();
     elements.reloadBtn.onclick = () => getActiveTab()?.frame.reload();
-    document.getElementById('home-btn-nav').onclick = () => window.location.href = '../index.html';
+    document.getElementById('home-btn-nav').onclick = () => window.location.href = getBasePath() + 'index.html';
     document.getElementById('devtools-btn').onclick = toggleDevTools;
     document.getElementById('wisp-settings-btn').onclick = openSettings;
 
@@ -669,7 +672,7 @@ async function checkHashParameters() {
 // =====================================================
 // MAIN INITIALIZATION
 // =====================================================
-document.addEventListener('DOMContentLoaded', async function () {
+async function startScramjark() {
     try {
         // Proactively find the best server before initializing
         await initializeWithBestServer();
@@ -726,5 +729,18 @@ document.addEventListener('DOMContentLoaded', async function () {
         await initializeBrowser();
     } catch (err) {
         console.error("Initialization error:", err);
+        const root = document.getElementById("app");
+        if (root) {
+            root.innerHTML =
+                '<div style="padding:24px;color:#fff;font:16px system-ui">' +
+                '<h2>Scramjark initialization error</h2><p>' +
+                String(err.message || err) + '</p></div>';
+        }
     }
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startScramjark, { once: true });
+} else {
+    startScramjark();
+}
