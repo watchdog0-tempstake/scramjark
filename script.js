@@ -1,11 +1,12 @@
 // =====================================================
 // CONFIGURATION - Gets from config.js
 // =====================================================
-const DEFAULT_WISP = window.SITE_CONFIG?.defaultWisp ?? "wss://glseries.net/wisp/";
-const WISP_SERVERS = [{ name: "GLSeries", url: "wss://glseries.net/wisp/" }];
+const DEFAULT_WISP = window.SITE_CONFIG?.defaultWisp ?? "wss://wisp.mercurywork.shop";
+const WISP_SERVERS = [{ name: "MercuryWork", url: DEFAULT_WISP }];
 
 // Initialize default proxy server if not set
-if (!localStorage.getItem("proxServer")) {
+const savedWisp = localStorage.getItem("proxServer");
+if (!savedWisp || savedWisp === "wss://glseries.net/wisp/") {
     localStorage.setItem("proxServer", DEFAULT_WISP);
 }
 
